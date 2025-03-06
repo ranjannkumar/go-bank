@@ -14,13 +14,15 @@ import (
 // Stores the listening address (e.g., ":8080").
 type APIServer struct {
 	listenAddr string
+	store      Storage
 }
 
 
 //Creates and returns a new APIServer instance with the given port.
-func NewAPIServer(listenAddr string) *APIServer {
+func NewAPIServer(listenAddr string,store Storage) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
+		store:      store,
 	}
 }
 
