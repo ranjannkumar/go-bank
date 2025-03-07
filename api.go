@@ -31,6 +31,8 @@ func (s *APIServer) Run(){
 	//Registers the /account route, wrapping handleAccount inside makeHTTPHandleFunc for error handling.
 	router.HandleFunc("/account",makeHTTPHandleFunc(s.handleAccount))
 	router.HandleFunc("/account/{id}",makeHTTPHandleFunc(s.handleGetAccountByID))
+	router.HandleFunc("/transfer",makeHTTPHandleFunc(s.handleTransfer))
+
 
 	log.Println("JSON API server running on port: ",s.listenAddr)
 	http.ListenAndServe(s.listenAddr,router)
@@ -101,7 +103,12 @@ func (s *APIServer) handleDeleteAccount(w http.ResponseWriter,r *http.Request)er
 }
 
 func (s *APIServer) handleTransfer(w http.ResponseWriter,r *http.Request)error{
-	return nil
+	transferReq:=new(TransferRequest)
+	if err:= json.NewDecoder(r.Body).Decode(transferReq);err!=nil{
+		return err
+	}
+	defer r.Body.Close()
+	return WriteJSON(w,http.StatusOK,transferReq)
 }
 
 
@@ -110,6 +117,9 @@ func WriteJSON(w http.ResponseWriter,status int, v any)error{
 	w.WriteHeader(status)
 	return json.NewEncoder(w).Encode(v)
 }
+
+
+
 
 //This helps in structuring API handlers that return errors.
 type apiFunc func (http.ResponseWriter,*http.Request)error
